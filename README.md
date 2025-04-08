@@ -1,1 +1,1 @@
-![laama](https://www.nextplatform.com/wp-content/uploads/2023/02/llama-logo-2-1030x438.jpg)
+![laama](https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Llama_front.jpg/1024px-Llama_front.jpg)

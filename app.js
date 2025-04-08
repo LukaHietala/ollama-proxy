@@ -1,48 +1,51 @@
+require("dotenv").config();
+
 const express = require("express");
 const axios = require("axios");
-const app = express();
-const port = 4321;
 const path = require("node:path");
 const fs = require("node:fs");
+
+const app = express();
+
+const PORT = process.env.PORT;
+const LLM_MODEL = process.env.LLM_MODEL;
+const OLLAMA_URL = process.env.OLLAMA_URL;
+const RAG_FILE_PATH = path.join(__dirname, "rag.txt");
+const SYSTEM_PROMPT = `You're friendly robot named Nao. \n History: \n`;
 
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.send("paivaa!");
+    res.send(
+        "<h1>OLama Proxy</h1><img src='https://media.tenor.com/9wFwCf2i5_cAAAAi/pepe-band-pepe.gif' alt='band' />"
+    );
 });
-
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
-
-const RAG_FIlE_PATH = path.join(__dirname, "rag.txt");
-
-const SYSTEM_PROMPT = `You're friendly robot named Nao. \n History: \n`;
 
 app.post("/api", async (req, res) => {
     let history = "";
+
     try {
-        history = await fs.promises.readFile(RAG_FIlE_PATH, "utf8");
+        history = await fs.promises.readFile(RAG_FILE_PATH, "utf8");
     } catch (err) {
-        console.error(err);
-        return res.status(500).send("Error reading history file");
+        console.error("Failed to read rag file:", err);
+        return res.status(500).send("Error reading conversation history");
     }
 
     try {
         await fs.promises.appendFile(
-            RAG_FIlE_PATH,
+            RAG_FILE_PATH,
             `\nUser: ${req.body.content}\n`
         );
     } catch (err) {
-        console.error(err);
-        return res.status(500).send("Error writing to history file");
+        console.error("Failed to append user message to rag file:", err);
+        return res.status(500).send("Error saving your message");
     }
 
     try {
         const response = await axios.post(
-            "http://localhost:11434/api/chat",
+            OLLAMA_URL,
             {
-                model: "qwen2.5:14b",
+                model: LLM_MODEL,
                 stream: false,
                 messages: [
                     {
@@ -59,23 +62,30 @@ app.post("/api", async (req, res) => {
             }
         );
 
-        const botResponse = response.data.message.content;
+        const responseMessage = response.data.message.content;
 
-        await fs.promises.appendFile(RAG_FIlE_PATH, `System: ${botResponse}\n`);
+        await fs.promises.appendFile(
+            RAG_FILE_PATH,
+            `System: ${responseMessage}\n`
+        );
 
         res.json(response.data);
     } catch (error) {
-        console.error("Virhe API pyynnössä:", error);
-        res.status(500).send(":(");
+        console.error("API req failed:", error);
+        res.status(500).send("Failed to get response from ollama server");
     }
 });
 
 app.post("/delete", async (req, res) => {
     try {
-        await fs.promises.writeFile(RAG_FIlE_PATH, "");
-        res.send("History cleared");
+        await fs.promises.writeFile(RAG_FILE_PATH, "");
+        res.send("Rag file cleared");
     } catch (err) {
-        console.error(err);
-        res.status(500).send("Error clearing history file");
+        console.error("Failed to clear rag file:", err);
+        res.status(500).send("Error clearing conversation history");
     }
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
