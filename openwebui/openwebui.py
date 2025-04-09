@@ -3,8 +3,6 @@ from dotenv import load_dotenv
 
 class OpenWebUIClient:
     def __init__(self, base_url=None, api_key=None, model=None):
-        load_dotenv()
-        
         self.base_url = base_url
         self.api_key = api_key
         self.model = model
@@ -26,8 +24,13 @@ class OpenWebUIClient:
 
 
 def main():
+    load_dotenv()
+
     base_url = os.getenv("OPENWEBUI_BASE_URL")
     api_key = os.getenv("OPENWEBUI_API_KEY")
     model = os.getenv("OPENWEBUI_MODEL")
 
     client = OpenWebUIClient(base_url, api_key, model)
+
+if __name__ == "__main__":
+    main()
