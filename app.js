@@ -10,7 +10,7 @@ const app = express();
 const PORT = process.env.PORT;
 const LLM_MODEL = process.env.LLM_MODEL;
 const OLLAMA_URL = process.env.OLLAMA_URL;
-const RAG_FILE_PATH = path.join(__dirname, "rag.txt");
+const HISTORY_FILE_PATH = path.join(__dirname, "history.txt");
 const SYSTEM_PROMPT = `You are Nao, a friendly and helpful robot assistant created for demostration purposes. 
 - Try to keep responses under 3 sentences with clear and concise language
 - Avoid unnecessary repetition
@@ -35,19 +35,19 @@ app.post("/api", async (req, res) => {
     let history = "";
 
     try {
-        history = await fs.promises.readFile(RAG_FILE_PATH, "utf8");
+        history = await fs.promises.readFile(HISTORY_FILE_PATH, "utf8");
     } catch (err) {
-        console.error("Failed to read rag file:", err);
+        console.error("Failed to read history file:", err);
         return res.status(500).send("Error reading conversation history");
     }
 
     try {
         await fs.promises.appendFile(
-            RAG_FILE_PATH,
+            HISTORY_FILE_PATH,
             `\nUser: ${req.body.content}\n`
         );
     } catch (err) {
-        console.error("Failed to append user message to rag file:", err);
+        console.error("Failed to append user message to history file:", err);
         return res.status(500).send("Error saving your message");
     }
 
@@ -75,7 +75,7 @@ app.post("/api", async (req, res) => {
         const responseMessage = response.data.message.content;
 
         await fs.promises.appendFile(
-            RAG_FILE_PATH,
+            HISTORY_FILE_PATH,
             `System: ${responseMessage}\n`
         );
 
@@ -88,10 +88,10 @@ app.post("/api", async (req, res) => {
 
 app.post("/delete", async (req, res) => {
     try {
-        await fs.promises.writeFile(RAG_FILE_PATH, "");
-        res.send("Rag file cleared");
+        await fs.promises.writeFile(HISTORY_FILE_PATH, "");
+        res.send("History file cleared");
     } catch (err) {
-        console.error("Failed to clear rag file:", err);
+        console.error("Failed to clear history file:", err);
         res.status(500).send("Error clearing conversation history");
     }
 });
