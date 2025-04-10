@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 import requests
+from flask import Flask, request, jsonify
 
 class OpenWebUIClient:
     def __init__(self, base_url=None, api_key=None, model=None):
@@ -66,6 +67,41 @@ class OpenWebUIClient:
         pass
     
 
+def create_app(client):
+    app = Flask(__name__)
+    
+    @app.route('/api/models', methods=['GET'])
+    def get_models():
+        try:
+            models = client.get_models()
+            return jsonify(models)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    
+    @app.route('/api/chat', methods=['POST'])
+    def chat():
+        try:
+            data = request.json
+            if not data or 'message' not in data:
+                return jsonify({"error": "Message is required!"}), 400
+            
+            response_data = client.send_message(data['message'])
+            response = jsonify(response_data["choices"][0])
+            response.headers["Content-Type"] = "application/json; charset=utf-8"
+            return response
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    
+    @app.route('/api/chat/clear', methods=['POST'])
+    def clear_chat(): 
+        try:
+            client.clear_history()
+            return jsonify({"status": "success", "message": "Conversation history cleared"})
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        
+    return app
+
 
 def main():
     load_dotenv()
@@ -73,8 +109,12 @@ def main():
     base_url = os.getenv("OPENWEBUI_BASE_URL")
     api_key = os.getenv("OPENWEBUI_API_KEY")
     model = os.getenv("OPENWEBUI_MODEL")
+    port = int(os.getenv("PORT"))
 
     client = OpenWebUIClient(base_url, api_key, model)
+    
+    app = create_app(client)
+    app.run(host="0.0.0.0", port=port)
 
 if __name__ == "__main__":
     main()
