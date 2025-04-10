@@ -25,6 +25,8 @@ def test_chat(message="Mitä kuuluu?"):
     if response.status_code == 200 and "data" in response.json():
         print(f"Vastaus: {response.json()['data']['message']['content'][:100]}...")
         print(f"Koko Vastaus: {response.json()}")
+    else:
+        print(f"Virhe: {response.json()}")
     return response.status_code == 200
 
 def test_clear():
