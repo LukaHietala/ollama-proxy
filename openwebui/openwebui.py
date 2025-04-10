@@ -86,6 +86,19 @@ def create_app(client):
                 return jsonify({"error": "Message is required!"}), 400
             
             response_data = client.send_message(data['message'])
+            print(response_data)
+
+            if response_data["usage"]["total_tokens"] > 1500:
+                client.clear_history()
+                return jsonify({
+                    "choices": [
+                        {"message": {"role": "assistant", "content": "Muistini loppui kesken, joten joudun tyhjentämään sen"}}
+                    ]
+                }), 200
+            
+            if not response_data or "choices" not in response_data or not response_data["choices"]:
+                return jsonify({"error": "Invalid response from model API"}), 500
+                
             response = jsonify(response_data["choices"][0])
             response.headers["Content-Type"] = "application/json; charset=utf-8"
             return response
@@ -114,7 +127,7 @@ def main():
     client = OpenWebUIClient(base_url, api_key, model)
     
     app = create_app(client)
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port, debug=False)
 
 if __name__ == "__main__":
     main()
