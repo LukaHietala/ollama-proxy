@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 import requests
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from functools import wraps
 
 # Nao sanoo "message" kohdan jos se on täytetty, tietyissä tapauksissa Nao voi sanoa datan
@@ -98,6 +98,11 @@ class OpenWebUIClient:
 def create_app(client):
     app = Flask(__name__)
     
+    # Simppeli chat sivu
+    @app.route('/')
+    def index():
+        return render_template('index.html')
+    
     # Ehkä hauska lisäys Naolle, mutta ei pakollinen
     @app.route('/api/models', methods=['GET'])
     @handle_errors
@@ -166,7 +171,7 @@ def create_app(client):
     
     @app.errorhandler(418)
     def teapot_error(error):
-        return jsonify(error_response("I'm a teapot")), 418 # rfc2324 :)
+        return jsonify(error_response("I'm a teapot")), 418 # rfc2324
     
     @app.errorhandler(500)
     def server_error(error):

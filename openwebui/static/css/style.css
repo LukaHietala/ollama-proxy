@@ -1,0 +1,64 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+body {
+    background-color: #121212;
+    padding: 10px;
+    color: #ffffff;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 0;
+    margin-bottom: 10px;
+}
+
+.message {
+    margin-bottom: 6px;
+    padding: 8px 0;
+    line-height: 1.5;
+}
+
+.user {
+    color: #ffffff;
+}
+
+.assistant {
+    color: #ffffff;
+    border-bottom: 1px solid #2c2c2c;
+    padding-bottom: 24px;
+}
+
+.system {
+    text-align: center;
+    margin: 12px auto;
+}
+
+#user-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #333333;
+    resize: none;
+    min-height: 50px;
+    margin-bottom: 10px;
+    background-color: #121212;
+    color: #e1e1e1;
+    outline: none;
+}
