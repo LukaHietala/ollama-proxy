@@ -20,7 +20,7 @@ def error_response(error_message):
         "error": error_message
     }
 
-# Kaikki funktiot jotka voivat heittää virheitä käsitellään tässä
+# Kaikki api funktiot jotka voivat heittää virheitä käsitellään tässä
 # https://flask.palletsprojects.com/en/latest/patterns/viewdecorators/
 def handle_errors(f):
     @wraps(f)
@@ -129,6 +129,8 @@ def create_app(client):
         if not response_data or "choices" not in response_data or not response_data["choices"]:
             return jsonify(error_response("Invalid response from openwebui API")), 500
         
+        print(response_data)
+        
         return jsonify(success_response(data={"message": response_data["choices"][0]["message"]}))
     
     # Tyhjentää keskusteluhistorian, onStopped eventissä tai käskyllä(?)
@@ -163,7 +165,7 @@ def create_app(client):
         return jsonify(error_response("Method not allowed")), 405
     
     @app.errorhandler(418)
-    def custom_error(error):
+    def teapot_error(error):
         return jsonify(error_response("I'm a teapot")), 418 # rfc2324 :)
     
     @app.errorhandler(500)

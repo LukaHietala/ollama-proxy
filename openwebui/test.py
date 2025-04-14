@@ -21,7 +21,7 @@ def test_chat(message="Mitä kuuluu?"):
     print(f"Testataan viestintä: '{message}'")
     response = requests.post(f"{BASE_URL}/chat", json={"message": message})
     print(f"Status: {response.status_code}")
-    
+
     if response.status_code == 200 and "data" in response.json():
         print(f"Vastaus: {response.json()['data']['message']['content'][:100]}...")
         print(f"Koko Vastaus: {response.json()}")
