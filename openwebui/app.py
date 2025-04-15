@@ -77,7 +77,7 @@ class OpenWebUIClient:
             "messages": messages
         }
 
-        response = requests.post(url, headers=self.headers, json=payload, timeout=30)
+        response = requests.post(url, headers=self.headers, json=payload, timeout=45)
         
         if response.status_code == 200:
             response_data = response.json()
