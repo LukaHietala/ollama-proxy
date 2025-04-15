@@ -1,56 +1,62 @@
 ## Ympäristö
 
-1. Luo virtuaali ympäristö
+1. Luo virtuaaliympäristö
 
-2. Täytä .env tiedosto ympäristömuuttujilla
+```sh
+python -m venv venv
+source venv/bin/activate
+```
 
-```bash
+2. Kopioi `.env.example` tiedosto nimellä `.env` ja täytä siihen oikeat arvot:
+
+```env
 OPENWEBUI_BASE_URL=
 OPENWEBUI_API_KEY=
 OPENWEBUI_MODEL=
 PORT=
 ```
 
-3. Asenna ja käynnistä
+3. Asenna riippuvuudet ja käynnistä palvelin
 
 ```sh
 pip install -r requirements.txt
 python app.py
 ```
 
-## API Endpointit
+## API endpointit
 
-Tarkistaa yhteyden tekoäly palvelimeen
+Tarkista palvelimen tila
 
 ```
 GET /api/health
 ```
 
-Hakee mallit
+Hae käytettävissä olevat mallit
 
 ```
 GET /api/models
 ```
 
-Lähettää viestin mallille
+Lähetä viesti mallille
 
 ```
 POST /api/chat
 Content-Type: application/json
+
 {
   "message": "Hei nao!"
 }
 ```
 
-Tyhjentää keskustelun historian
+Tyhjennä keskusteluhistoria
 
 ```
 POST /api/chat/clear
 ```
 
-## Vastaus formaatti
+## Vastausmuodot
 
-Success response
+Onnistunut vastaus
 
 ```json
 {
@@ -60,28 +66,28 @@ Success response
 }
 ```
 
-Error response
+Virhevastaus
 
 ```json
 {
     "success": false,
-    "error": "Virhe viesti"
+    "error": "Virheviesti"
 }
 ```
 
-> Endpointit voi testata test.py skriptillä
+> Rajapintoja voi testata ajamalla `python test.py` tai testata niiden nopeutta `python perftest.py` skriptillä.
 
-## OpenWebUI Palvelin
+## OpenWebUI palvelin
 
-Valmistele Arch tai Debian pohjainen Linux, esim. KVM virtuaali koneessa
+Valmistele Arch tai Debian pohjanen Linux (esim. VM).
 
 Tarvittavat ohjelmistot:
 
 -   Ollama
 -   Docker
 
-Docker ympäristön starttaminen
+Käynnistä OpenWebUI Dockerilla:
 
-```bash
+```sh
 docker run -d --network=host -v open-webui:/app/backend/data -e OLLAMA_BASE_URL=http://127.0.0.1:11434 --name open-webui --restart always ghcr.io/open-webui/open-webui:main
 ```
