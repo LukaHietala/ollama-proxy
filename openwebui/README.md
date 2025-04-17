@@ -97,7 +97,7 @@ docker run -d --network=host -v open-webui:/app/backend/data -e OLLAMA_BASE_URL=
 Ja käynnistä Ollama:
 
 ```sh
-OLLAMA_HOST=127.0.0.1 ollama serve
+OLLAMA_HOST=127.0.0.1:3000 ollama serve
 ```
 
 > Ollamassa on bugi minkä vuoksi `OLLAMA_HOST` on asetettava, https://github.com/ollama/ollama/issues/707
